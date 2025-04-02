@@ -1,0 +1,44 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Regia Stimolo</title>
+</head>
+<body>
+  <h2>Dashboard Regia</h2>
+  <label>Frequenza: <span id="freqValue">4</span> Hz</label><br>
+  <input type="range" id="freq" min="1" max="20" value="4"><br><br>
+
+  <button onclick="startStimolo()">Avvia Stimolo</button>
+  <button onclick="stopStimolo()">Ferma Stimolo</button><br><br>
+  <input type="text" id="audioUrl" placeholder="URL Audio Binaurale" size="50">
+
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script>
+    const socket = io('https://YOUR_SERVER_URL'); // Sostituisci con l'URL del tuo server WebSocket
+
+    const freqSlider = document.getElementById('freq');
+    const freqValue = document.getElementById('freqValue');
+
+    freqSlider.addEventListener('input', () => {
+      freqValue.textContent = freqSlider.value;
+      socket.emit('stimolo', { cmd: 'changeFreq', freq: parseInt(freqSlider.value) });
+    });
+
+    function startStimolo() {
+      const audio = document.getElementById('audioUrl').value;
+      socket.emit('stimolo', {
+        cmd: 'start',
+        freq: parseInt(freqSlider.value),
+        audio
+      });
+    }
+
+    function stopStimolo() {
+      socket.emit('stimolo', { cmd: 'stop' });
+    }
+  </script>
+</body>
+</html>
